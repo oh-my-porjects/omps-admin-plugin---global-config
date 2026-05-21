@@ -10,7 +10,7 @@ views:
   - key: config_list
     type: table
     title: 全局配置
-    api: GET /api/global-config/list
+    api: GET /api/global_config/config/list
     columns:
       - field: key
         title: 键
@@ -25,15 +25,15 @@ views:
       - key: create
         type: page
         title: 新增配置
-        api: POST /api/global-config/set
+        api: POST /api/global_config/config/update
       - key: edit
         type: row
         title: 修改
-        api: PUT /api/global-config/{key}
-      - key: delete
+        api: POST /api/global_config/config/update
+      - key: reset_default
         type: row
-        title: 删除
-        api: DELETE /api/global-config/{key}
+        title: 恢复默认值
+        api: POST /api/global_config/config/reset-default
         danger: true
 roles:
   - code: admin
