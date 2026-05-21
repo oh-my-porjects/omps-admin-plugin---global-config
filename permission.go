@@ -32,6 +32,9 @@ func (p *GlobalConfigPlugin) requirePermission(w http.ResponseWriter, r *http.Re
 func (p *GlobalConfigPlugin) requirePermissionForToken(w http.ResponseWriter, r *http.Request, token, permission string, invalidCode, deniedCode, failureCode int, deniedMsg string) bool {
 	token = strings.TrimSpace(token)
 	if token == "" {
+		if p.projectAdminHasPermission(r, permission) {
+			return true
+		}
 		if hasAPIKey(r) {
 			return true
 		}
@@ -52,6 +55,49 @@ func (p *GlobalConfigPlugin) requirePermissionForToken(w http.ResponseWriter, r 
 		return false
 	}
 	return true
+}
+
+func (p *GlobalConfigPlugin) projectAdminHasPermission(r *http.Request, permission string) bool {
+	if r == nil {
+		return false
+	}
+	token := strings.TrimSpace(r.Header.Get("X-Admin-Session-Token"))
+	if token == "" {
+		token = strings.TrimSpace(r.Header.Get("X-Admin-Token"))
+	}
+	if token == "" {
+		token = strings.TrimSpace(strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer "))
+	}
+	if token == "" {
+		return false
+	}
+	role := strings.TrimSpace(r.Header.Get("X-Admin-Role"))
+	switch permission {
+	case "global_config.view":
+		return isProjectAdminRole(role)
+	case "global_config.edit", "global_config.reset":
+		return isProjectAdminManageRole(role)
+	default:
+		return false
+	}
+}
+
+func isProjectAdminRole(role string) bool {
+	switch strings.TrimSpace(role) {
+	case "admin", "developer", "operator", "超级管理员", "开发者", "运营", "运维":
+		return true
+	default:
+		return false
+	}
+}
+
+func isProjectAdminManageRole(role string) bool {
+	switch strings.TrimSpace(role) {
+	case "admin", "developer", "超级管理员", "开发者":
+		return true
+	default:
+		return false
+	}
 }
 
 func hasAPIKey(r *http.Request) bool {
