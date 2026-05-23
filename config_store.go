@@ -46,7 +46,37 @@ func (p *GlobalConfigPlugin) ensureSchema(ctx context.Context) error {
 			created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
 			updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 		)`)
-	return err
+	if err != nil {
+		return err
+	}
+	return p.seedDefaultConfigs(ctx)
+}
+
+func (p *GlobalConfigPlugin) seedDefaultConfigs(ctx context.Context) error {
+	for _, item := range defaultConfigItems(time.Now().UTC()) {
+		currentRaw, err := json.Marshal(item.CurrentValue)
+		if err != nil {
+			return err
+		}
+		defaultRaw, err := json.Marshal(item.DefaultValue)
+		if err != nil {
+			return err
+		}
+		if _, err := p.db.ExecContext(ctx, `
+			INSERT INTO global_configs_items
+				(id, config_key, value_type, current_value, default_value, description, module_name, created_at, updated_at)
+			VALUES ($1, $2, $3, $4::jsonb, $5::jsonb, $6, $7, now(), now())
+			ON CONFLICT (config_key) DO UPDATE SET
+				value_type = EXCLUDED.value_type,
+				default_value = EXCLUDED.default_value,
+				description = EXCLUDED.description,
+				module_name = EXCLUDED.module_name,
+				updated_at = global_configs_items.updated_at`,
+			item.ID, item.ConfigKey, item.ValueType, string(currentRaw), string(defaultRaw), item.Description, item.ModuleName); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (p *GlobalConfigPlugin) listConfigs(ctx context.Context, moduleName, keyword string, page, pageSize int) ([]map[string]any, int, error) {
@@ -122,7 +152,11 @@ func (p *GlobalConfigPlugin) ensureMemoryStore() {
 		return
 	}
 	now := time.Now().UTC()
-	p.items = map[string]globalConfigItem{
+	p.items = defaultConfigItems(now)
+}
+
+func defaultConfigItems(now time.Time) map[string]globalConfigItem {
+	return map[string]globalConfigItem{
 		"global_config.feature_enabled": {
 			ID:           "global_config.feature_enabled",
 			ConfigKey:    "global_config.feature_enabled",
@@ -153,6 +187,94 @@ func (p *GlobalConfigPlugin) ensureMemoryStore() {
 			DefaultValue: "system",
 			Description:  "后台配置界面默认主题",
 			ModuleName:   "global_config",
+			CreatedAt:    now,
+			UpdatedAt:    now,
+		},
+		"user.account_min_length": {
+			ID:           "user.account_min_length",
+			ConfigKey:    "user.account_min_length",
+			ValueType:    "number",
+			CurrentValue: float64(4),
+			DefaultValue: float64(4),
+			Description:  "用户账号最小长度",
+			ModuleName:   "user",
+			CreatedAt:    now,
+			UpdatedAt:    now,
+		},
+		"user.account_max_length": {
+			ID:           "user.account_max_length",
+			ConfigKey:    "user.account_max_length",
+			ValueType:    "number",
+			CurrentValue: float64(32),
+			DefaultValue: float64(32),
+			Description:  "用户账号最大长度",
+			ModuleName:   "user",
+			CreatedAt:    now,
+			UpdatedAt:    now,
+		},
+		"user.password_min_length": {
+			ID:           "user.password_min_length",
+			ConfigKey:    "user.password_min_length",
+			ValueType:    "number",
+			CurrentValue: float64(8),
+			DefaultValue: float64(8),
+			Description:  "用户密码最小长度",
+			ModuleName:   "user",
+			CreatedAt:    now,
+			UpdatedAt:    now,
+		},
+		"user.password_max_length": {
+			ID:           "user.password_max_length",
+			ConfigKey:    "user.password_max_length",
+			ValueType:    "number",
+			CurrentValue: float64(32),
+			DefaultValue: float64(32),
+			Description:  "用户密码最大长度",
+			ModuleName:   "user",
+			CreatedAt:    now,
+			UpdatedAt:    now,
+		},
+		"user.allow_register": {
+			ID:           "user.allow_register",
+			ConfigKey:    "user.allow_register",
+			ValueType:    "boolean",
+			CurrentValue: true,
+			DefaultValue: true,
+			Description:  "是否允许新用户注册",
+			ModuleName:   "user",
+			CreatedAt:    now,
+			UpdatedAt:    now,
+		},
+		"user.access_token_ttl_seconds": {
+			ID:           "user.access_token_ttl_seconds",
+			ConfigKey:    "user.access_token_ttl_seconds",
+			ValueType:    "number",
+			CurrentValue: float64(3600),
+			DefaultValue: float64(3600),
+			Description:  "用户 access token 有效期秒数",
+			ModuleName:   "user",
+			CreatedAt:    now,
+			UpdatedAt:    now,
+		},
+		"user.refresh_token_ttl_seconds": {
+			ID:           "user.refresh_token_ttl_seconds",
+			ConfigKey:    "user.refresh_token_ttl_seconds",
+			ValueType:    "number",
+			CurrentValue: float64(10800),
+			DefaultValue: float64(10800),
+			Description:  "用户 refresh token 有效期秒数",
+			ModuleName:   "user",
+			CreatedAt:    now,
+			UpdatedAt:    now,
+		},
+		"user.token_refresh_threshold_seconds": {
+			ID:           "user.token_refresh_threshold_seconds",
+			ConfigKey:    "user.token_refresh_threshold_seconds",
+			ValueType:    "number",
+			CurrentValue: float64(300),
+			DefaultValue: float64(300),
+			Description:  "WebSocket 自动续期触发阈值秒数",
+			ModuleName:   "user",
 			CreatedAt:    now,
 			UpdatedAt:    now,
 		},
