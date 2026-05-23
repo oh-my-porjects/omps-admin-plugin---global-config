@@ -42,6 +42,7 @@ views:
         title: 恢复默认值
         api: POST /api/global_config/config/reset-default
         danger: true
+        confirm: 恢复默认值会立即覆盖当前配置，请确认
         fields:
           - field: config_key
             title: 配置键
