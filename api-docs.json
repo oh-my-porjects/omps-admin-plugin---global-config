@@ -1,0 +1,479 @@
+{
+  "module": "global-config",
+  "module_title": "全局配置",
+  "apis": [
+    {
+      "method": "GET",
+      "path": "/api/global_config/hello",
+      "endpoint_key": "GET /api/global_config/hello",
+      "title": "模块探活",
+      "description": "返回 global-config 模块名称和当前版本。",
+      "auth": "public",
+      "params": [],
+      "response": {
+        "description": "模块基础信息。",
+        "data_type": "object",
+        "fields": [
+          {
+            "name": "module",
+            "type": "string",
+            "description": "模块名称。"
+          },
+          {
+            "name": "version",
+            "type": "string",
+            "description": "模块版本。"
+          }
+        ],
+        "error_codes": []
+      },
+      "response_example": {
+        "status": 0,
+        "data": {
+          "module": "global-config",
+          "version": "dev"
+        },
+        "msg": "ok"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/global_config/config/list",
+      "endpoint_key": "GET /api/global_config/config/list",
+      "title": "查询配置列表",
+      "description": "校验查看权限后分页查询全局配置，可按模块名和关键词过滤。",
+      "auth": "admin_session",
+      "params": [
+        {
+          "name": "page",
+          "type": "integer",
+          "required": true,
+          "constraint": "大于等于 1",
+          "description": "页码。"
+        },
+        {
+          "name": "page_size",
+          "type": "integer",
+          "required": true,
+          "constraint": "1-100",
+          "description": "每页数量。"
+        },
+        {
+          "name": "module_name",
+          "type": "string",
+          "required": false,
+          "constraint": "模块名格式",
+          "description": "按所属模块过滤。"
+        },
+        {
+          "name": "keyword",
+          "type": "string",
+          "required": false,
+          "constraint": "最多 64 个字符",
+          "description": "按配置键名或说明关键词过滤。"
+        }
+      ],
+      "response": {
+        "description": "返回配置列表和分页信息。",
+        "data_type": "object",
+        "fields": [
+          {
+            "name": "items",
+            "type": "array",
+            "description": "配置项列表。",
+            "fields": [
+              {
+                "name": "config_key",
+                "type": "string",
+                "description": "配置键名。"
+              },
+              {
+                "name": "value_type",
+                "type": "string",
+                "description": "值类型：string、number、boolean 或 json。"
+              },
+              {
+                "name": "current_value",
+                "type": "object",
+                "description": "当前配置值，类型随 value_type 变化。"
+              },
+              {
+                "name": "default_value",
+                "type": "object",
+                "description": "默认配置值，类型随 value_type 变化。"
+              },
+              {
+                "name": "description",
+                "type": "string",
+                "description": "配置用途说明。"
+              },
+              {
+                "name": "module_name",
+                "type": "string",
+                "description": "所属模块。"
+              },
+              {
+                "name": "updated_at",
+                "type": "string",
+                "description": "更新时间，RFC3339 字符串。"
+              }
+            ]
+          },
+          {
+            "name": "total",
+            "type": "integer",
+            "description": "总数量。"
+          },
+          {
+            "name": "page",
+            "type": "integer",
+            "description": "当前页码。"
+          },
+          {
+            "name": "page_size",
+            "type": "integer",
+            "description": "每页数量。"
+          }
+        ],
+        "error_codes": [
+          {
+            "status": 2301,
+            "msg": "缺少后台会话。"
+          },
+          {
+            "status": 2302,
+            "msg": "后台会话无效。"
+          },
+          {
+            "status": 2303,
+            "msg": "分页参数不合法。"
+          },
+          {
+            "status": 2304,
+            "msg": "模块或关键词参数不合法。"
+          },
+          {
+            "status": 2305,
+            "msg": "无查看权限或查询失败。"
+          }
+        ]
+      },
+      "response_example": {
+        "status": 0,
+        "data": {
+          "items": [],
+          "total": 0,
+          "page": 1,
+          "page_size": 20
+        },
+        "msg": ""
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/global_config/config/detail",
+      "endpoint_key": "GET /api/global_config/config/detail",
+      "title": "查询配置详情",
+      "description": "校验查看权限后查询单个全局配置详情。",
+      "auth": "admin_session",
+      "params": [
+        {
+          "name": "config_key",
+          "type": "string",
+          "required": true,
+          "constraint": "配置键名格式",
+          "description": "要查询的配置键名。"
+        }
+      ],
+      "response": {
+        "description": "返回单个配置项详情。",
+        "data_type": "object",
+        "fields": [
+          {
+            "name": "config_key",
+            "type": "string",
+            "description": "配置键名。"
+          },
+          {
+            "name": "value_type",
+            "type": "string",
+            "description": "值类型：string、number、boolean 或 json。"
+          },
+          {
+            "name": "current_value",
+            "type": "object",
+            "description": "当前配置值。"
+          },
+          {
+            "name": "default_value",
+            "type": "object",
+            "description": "默认配置值。"
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "description": "配置用途说明。"
+          },
+          {
+            "name": "module_name",
+            "type": "string",
+            "description": "所属模块。"
+          },
+          {
+            "name": "created_at",
+            "type": "string",
+            "description": "创建时间，RFC3339 字符串。"
+          },
+          {
+            "name": "updated_at",
+            "type": "string",
+            "description": "更新时间，RFC3339 字符串。"
+          }
+        ],
+        "error_codes": [
+          {
+            "status": 2311,
+            "msg": "缺少后台会话。"
+          },
+          {
+            "status": 2312,
+            "msg": "后台会话无效。"
+          },
+          {
+            "status": 2313,
+            "msg": "配置键名缺失或格式不合法。"
+          },
+          {
+            "status": 2314,
+            "msg": "配置项不存在。"
+          },
+          {
+            "status": 2315,
+            "msg": "无查看权限或查询失败。"
+          }
+        ]
+      },
+      "response_example": {
+        "status": 0,
+        "data": {
+          "config_key": "wallet.min_recharge",
+          "value_type": "number",
+          "current_value": 100,
+          "default_value": 100,
+          "description": "最低充值金额",
+          "module_name": "wallet",
+          "created_at": "2026-05-28T00:00:00Z",
+          "updated_at": "2026-05-28T00:00:00Z"
+        },
+        "msg": ""
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/global_config/config/update",
+      "endpoint_key": "POST /api/global_config/config/update",
+      "title": "更新配置值",
+      "description": "校验编辑权限后更新指定全局配置的当前值。",
+      "auth": "admin_session",
+      "params": [
+        {
+          "name": "operator_session_token",
+          "type": "string",
+          "required": true,
+          "description": "后台操作人的会话令牌。"
+        },
+        {
+          "name": "config_key",
+          "type": "string",
+          "required": true,
+          "constraint": "配置键名格式",
+          "description": "要更新的配置键名。"
+        },
+        {
+          "name": "current_value",
+          "type": "object",
+          "required": true,
+          "description": "新的配置值，类型必须匹配该配置的 value_type。"
+        }
+      ],
+      "request_example": {
+        "operator_session_token": "session-token",
+        "config_key": "wallet.min_recharge",
+        "current_value": 100
+      },
+      "response": {
+        "description": "返回更新后的关键字段。",
+        "data_type": "object",
+        "fields": [
+          {
+            "name": "config_key",
+            "type": "string",
+            "description": "配置键名。"
+          },
+          {
+            "name": "value_type",
+            "type": "string",
+            "description": "值类型。"
+          },
+          {
+            "name": "current_value",
+            "type": "object",
+            "description": "更新后的当前值。"
+          },
+          {
+            "name": "updated_at",
+            "type": "string",
+            "description": "更新时间，RFC3339 字符串。"
+          }
+        ],
+        "error_codes": [
+          {
+            "status": 2321,
+            "msg": "缺少后台会话。"
+          },
+          {
+            "status": 2322,
+            "msg": "后台会话无效。"
+          },
+          {
+            "status": 2323,
+            "msg": "配置键名缺失或格式不合法。"
+          },
+          {
+            "status": 2324,
+            "msg": "配置项不存在。"
+          },
+          {
+            "status": 2325,
+            "msg": "配置值缺失或与类型不匹配。"
+          },
+          {
+            "status": 2326,
+            "msg": "无编辑权限或更新失败。"
+          }
+        ]
+      },
+      "response_example": {
+        "status": 0,
+        "data": {
+          "config_key": "wallet.min_recharge",
+          "value_type": "number",
+          "current_value": 100,
+          "updated_at": "2026-05-28T00:00:00Z"
+        },
+        "msg": ""
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/global_config/config/reset-default",
+      "endpoint_key": "POST /api/global_config/config/reset-default",
+      "title": "恢复默认配置",
+      "description": "校验恢复权限后把指定全局配置恢复为默认值。",
+      "auth": "admin_session",
+      "params": [
+        {
+          "name": "operator_session_token",
+          "type": "string",
+          "required": true,
+          "description": "后台操作人的会话令牌。"
+        },
+        {
+          "name": "config_key",
+          "type": "string",
+          "required": true,
+          "constraint": "配置键名格式",
+          "description": "要恢复默认值的配置键名。"
+        }
+      ],
+      "request_example": {
+        "operator_session_token": "session-token",
+        "config_key": "wallet.min_recharge"
+      },
+      "response": {
+        "description": "返回恢复后的配置值。",
+        "data_type": "object",
+        "fields": [
+          {
+            "name": "config_key",
+            "type": "string",
+            "description": "配置键名。"
+          },
+          {
+            "name": "value_type",
+            "type": "string",
+            "description": "值类型。"
+          },
+          {
+            "name": "current_value",
+            "type": "object",
+            "description": "恢复后的当前值。"
+          },
+          {
+            "name": "default_value",
+            "type": "object",
+            "description": "默认值。"
+          },
+          {
+            "name": "updated_at",
+            "type": "string",
+            "description": "更新时间，RFC3339 字符串。"
+          }
+        ],
+        "error_codes": [
+          {
+            "status": 2331,
+            "msg": "缺少后台会话。"
+          },
+          {
+            "status": 2332,
+            "msg": "后台会话无效。"
+          },
+          {
+            "status": 2333,
+            "msg": "配置键名缺失或格式不合法。"
+          },
+          {
+            "status": 2334,
+            "msg": "配置项不存在。"
+          },
+          {
+            "status": 2335,
+            "msg": "无恢复权限或恢复失败。"
+          }
+        ]
+      },
+      "response_example": {
+        "status": 0,
+        "data": {
+          "config_key": "wallet.min_recharge",
+          "value_type": "number",
+          "current_value": 100,
+          "default_value": 100,
+          "updated_at": "2026-05-28T00:00:00Z"
+        },
+        "msg": ""
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/global_config/admin/ping",
+      "endpoint_key": "POST /api/global_config/admin/ping",
+      "title": "后台连通性检查",
+      "description": "管理端连通性检查接口，返回 pong。",
+      "auth": "api_key",
+      "params": [],
+      "response": {
+        "description": "固定返回 pong。",
+        "data_type": "object",
+        "fields": [],
+        "error_codes": []
+      },
+      "response_example": {
+        "status": 0,
+        "data": null,
+        "msg": "pong"
+      }
+    }
+  ]
+}
