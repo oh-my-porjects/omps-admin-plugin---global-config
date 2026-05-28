@@ -1,7 +1,7 @@
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **omps-module-template** (162 symbols, 212 relationships, 0 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **omps-admin-plugin---global-config** (285 symbols, 406 relationships, 6 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 
@@ -24,10 +24,10 @@ This project is indexed by GitNexus as **omps-module-template** (162 symbols, 21
 
 | Resource | Use for |
 |----------|---------|
-| `gitnexus://repo/omps-module-template/context` | Codebase overview, check index freshness |
-| `gitnexus://repo/omps-module-template/clusters` | All functional areas |
-| `gitnexus://repo/omps-module-template/processes` | All execution flows |
-| `gitnexus://repo/omps-module-template/process/{name}` | Step-by-step execution trace |
+| `gitnexus://repo/omps-admin-plugin---global-config/context` | Codebase overview, check index freshness |
+| `gitnexus://repo/omps-admin-plugin---global-config/clusters` | All functional areas |
+| `gitnexus://repo/omps-admin-plugin---global-config/processes` | All execution flows |
+| `gitnexus://repo/omps-admin-plugin---global-config/process/{name}` | Step-by-step execution trace |
 
 ## CLI
 
