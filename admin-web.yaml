@@ -12,12 +12,20 @@ views:
     title: 全局配置
     api: GET /api/global_config/config/list
     columns:
-      - field: key
+      - field: config_key
         title: 键
-      - field: value
-        title: 值
-      - field: scope
-        title: 作用域
+      - field: current_value
+        title: 当前值
+        render: json
+      - field: default_value
+        title: 默认值
+        render: json
+      - field: value_type
+        title: 类型
+      - field: module_name
+        title: 所属模块
+      - field: description
+        title: 说明
       - field: updated_at
         title: 更新时间
         render: datetime
