@@ -118,12 +118,12 @@ var Plugin = &GlobalConfigPlugin{}
 var Routes = map[string]http.HandlerFunc{
 	// 前台接口示例（以 /api/ 开头）
 	"GET /api/global_config/hello":                                handleHello,
-	"GET /{admin_prefix}/api/global_config/config/list":           handleConfigList,
-	"GET /{admin_prefix}/api/global_config/config/detail":         handleConfigDetail,
-	"POST /{admin_prefix}/api/global_config/config/update":        handleConfigUpdate,
-	"POST /{admin_prefix}/api/global_config/config/reset-default": handleConfigResetDefault,
-	// 后台管理接口示例（以 /{admin_prefix}/api/ 开头，部署时替换为项目 UUID）
-	"POST /{admin_prefix}/api/global_config/admin/ping": handleAdminPing,
+	"GET /api/global_config/config/list":           handleConfigList,
+	"GET /api/global_config/config/detail":         handleConfigDetail,
+	"POST /api/global_config/config/update":        handleConfigUpdate,
+	"POST /api/global_config/config/reset-default": handleConfigResetDefault,
+	// 后台管理接口示例（直接声明真实字面量路径）
+	"POST /api/global_config/admin/ping": handleAdminPing,
 	// 注：内部自测端点 POST /_internal/selftest 由 selftest.go 在 init() 时
 	// 注册进来，避免 var Routes 初始化循环依赖（selftest 需要回查 Routes）
 }
