@@ -1,0 +1,30 @@
+{
+  "api": "POST /_internal/scheduled-trigger/global-config",
+  "cases": [
+    {
+      "name": "定时触发缺少令牌返回 401",
+      "kind": "http",
+      "actor": "anonymous",
+      "method": "POST",
+      "path": "/_internal/scheduled-trigger/global-config",
+      "body": {
+        "task_name": "missing_task"
+      },
+      "expect_status": 401
+    },
+    {
+      "name": "定时触发未注册任务返回 404",
+      "kind": "http",
+      "actor": "admin",
+      "method": "POST",
+      "path": "/_internal/scheduled-trigger/global-config",
+      "headers": {
+        "X-Internal-Token": "${internal_token}"
+      },
+      "body": {
+        "task_name": "missing_task"
+      },
+      "expect_status": 404
+    }
+  ]
+}

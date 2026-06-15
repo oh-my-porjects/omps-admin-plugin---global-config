@@ -1,0 +1,28 @@
+{
+  "api": "POST /_internal/selftest/global-config",
+  "cases": [
+    {
+      "name": "selftest 缺少令牌返回 401",
+      "kind": "http",
+      "actor": "anonymous",
+      "method": "POST",
+      "path": "/_internal/selftest/global-config",
+      "expect_status": 401
+    },
+    {
+      "name": "selftest 内部调用返回废弃说明",
+      "kind": "http",
+      "actor": "admin",
+      "method": "POST",
+      "path": "/_internal/selftest/global-config",
+      "headers": {
+        "X-Internal-Token": "${internal_token}"
+      },
+      "expect_status": 200,
+      "expect_field": {
+        "status": 1
+      },
+      "expect_contains": "selftest 端点已废弃"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "api": "POST /_internal/method-call/global-config",
+  "cases": [
+    {
+      "name": "内部方法缺少令牌返回 401",
+      "kind": "http",
+      "actor": "anonymous",
+      "method": "POST",
+      "path": "/_internal/method-call/global-config",
+      "body": {
+        "method": "MissingMethod",
+        "args": {}
+      },
+      "expect_status": 401
+    },
+    {
+      "name": "内部方法未注册返回业务错误",
+      "kind": "http",
+      "actor": "admin",
+      "method": "POST",
+      "path": "/_internal/method-call/global-config",
+      "headers": {
+        "X-Internal-Token": "${internal_token}"
+      },
+      "body": {
+        "method": "MissingMethod",
+        "args": {}
+      },
+      "expect_status": 200,
+      "expect_field": {
+        "status": 1
+      }
+    }
+  ]
+}

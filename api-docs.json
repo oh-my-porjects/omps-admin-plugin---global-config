@@ -530,6 +530,178 @@
           "code_loc": "main.go:126"
         }
       ]
+    },
+    {
+      "method": "POST",
+      "path": "/_internal/method-call/global-config",
+      "endpoint_key": "POST /_internal/method-call/global-config",
+      "title": "内部方法调用",
+      "description": "runtime 或平台内部调用模块注册方法；必须携带内部令牌，未知方法返回业务错误。",
+      "auth": "internal",
+      "params": [
+        {
+          "name": "method",
+          "type": "string",
+          "required": true,
+          "description": "内部方法名。"
+        },
+        {
+          "name": "args",
+          "type": "object",
+          "required": false,
+          "description": "内部方法参数对象。",
+          "fields": []
+        }
+      ],
+      "response": {
+        "data_type": "object",
+        "fields": [
+          {
+            "name": "status",
+            "type": "number",
+            "description": "业务状态码；0 表示成功，非 0 表示失败。",
+            "enum_values": [
+              {
+                "value": 0,
+                "label": "成功"
+              },
+              {
+                "value": 1,
+                "label": "失败或未注册"
+              }
+            ]
+          },
+          {
+            "name": "msg",
+            "type": "string",
+            "description": "业务处理结果说明或错误原因。"
+          },
+          {
+            "name": "data",
+            "type": "object",
+            "description": "接口返回数据；无结果时为空对象。",
+            "fields": []
+          }
+        ]
+      },
+      "rules": [
+        {
+          "category": "business",
+          "title": "稳定契约",
+          "body": "runtime 或平台内部调用模块注册方法；必须携带内部令牌，未知方法返回业务错误。",
+          "code_loc": "main.go:Routes"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/_internal/scheduled-trigger/global-config",
+      "endpoint_key": "POST /_internal/scheduled-trigger/global-config",
+      "title": "内部定时任务触发",
+      "description": "runtime 或平台内部触发模块注册定时任务；必须携带内部令牌，未知任务返回未注册错误。",
+      "auth": "internal",
+      "params": [
+        {
+          "name": "task_name",
+          "type": "string",
+          "required": true,
+          "description": "定时任务名称。"
+        },
+        {
+          "name": "payload",
+          "type": "object",
+          "required": false,
+          "description": "定时任务参数对象。",
+          "fields": []
+        }
+      ],
+      "response": {
+        "data_type": "object",
+        "fields": [
+          {
+            "name": "status",
+            "type": "number",
+            "description": "业务状态码；0 表示成功，非 0 表示失败。",
+            "enum_values": [
+              {
+                "value": 0,
+                "label": "成功"
+              },
+              {
+                "value": 1,
+                "label": "失败或未注册"
+              }
+            ]
+          },
+          {
+            "name": "msg",
+            "type": "string",
+            "description": "业务处理结果说明或错误原因。"
+          },
+          {
+            "name": "data",
+            "type": "object",
+            "description": "接口返回数据；无结果时为空对象。",
+            "fields": []
+          }
+        ]
+      },
+      "rules": [
+        {
+          "category": "business",
+          "title": "稳定契约",
+          "body": "runtime 或平台内部触发模块注册定时任务；必须携带内部令牌，未知任务返回未注册错误。",
+          "code_loc": "main.go:Routes"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/_internal/selftest/global-config",
+      "endpoint_key": "POST /_internal/selftest/global-config",
+      "title": "内部自测入口",
+      "description": "历史内部自测入口；当前流水线以 tests/*.test.json 为准，该入口保留兼容并返回废弃说明。",
+      "auth": "internal",
+      "params": [],
+      "response": {
+        "data_type": "object",
+        "fields": [
+          {
+            "name": "status",
+            "type": "number",
+            "description": "业务状态码；0 表示成功，非 0 表示失败。",
+            "enum_values": [
+              {
+                "value": 0,
+                "label": "成功"
+              },
+              {
+                "value": 1,
+                "label": "失败或未注册"
+              }
+            ]
+          },
+          {
+            "name": "msg",
+            "type": "string",
+            "description": "业务处理结果说明或错误原因。"
+          },
+          {
+            "name": "data",
+            "type": "object",
+            "description": "接口返回数据；无结果时为空对象。",
+            "fields": []
+          }
+        ]
+      },
+      "rules": [
+        {
+          "category": "business",
+          "title": "稳定契约",
+          "body": "历史内部自测入口；当前流水线以 tests/*.test.json 为准，该入口保留兼容并返回废弃说明。",
+          "code_loc": "main.go:Routes"
+        }
+      ]
     }
   ]
 }

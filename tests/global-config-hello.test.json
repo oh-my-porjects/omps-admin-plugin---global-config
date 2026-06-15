@@ -11,6 +11,14 @@
       "expect_field": {
         "status": 0
       }
+    },
+    {
+      "name": "错误方法返回失败",
+      "kind": "http",
+      "actor": "anonymous",
+      "method": "POST",
+      "path": "/api/global_config/hello",
+      "expect_status": 405
     }
   ]
 }
