@@ -35,4 +35,19 @@ noise_fields: []
 #     seed_data:
 #       - {id: "{range_tag}001", name: "示例 1", created_at: "now()"}
 #       - {id: "{range_tag}002", name: "示例 2", created_at: "now()"}
-tables: {}
+tables:
+  global_configs_items:
+    primary_key: config_key
+    range_filter: "config_key LIKE '{range_tag}%' OR id LIKE '{range_tag}%'"
+    snapshot_view: [id, config_key, value_type, current_value, default_value, description, module_name, updated_at]
+    snapshot_summary: "config_key, value_type, module_name"
+    seed_data:
+      - id: "{range_tag}config"
+        config_key: "{range_tag}feature_enabled"
+        value_type: "boolean"
+        current_value: "true"
+        default_value: "false"
+        description: "测试功能开关"
+        module_name: "test"
+        created_at: "now()"
+        updated_at: "now()"

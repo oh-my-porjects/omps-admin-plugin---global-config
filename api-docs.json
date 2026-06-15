@@ -34,7 +34,15 @@
           "version": "dev"
         },
         "msg": "ok"
-      }
+      },
+      "rules": [
+        {
+          "category": "business",
+          "title": "模块探活 返回当前事实",
+          "body": "该查询接口必须按照当前代码和数据表返回稳定字段结构；分页、筛选、排序和空结果语义必须与 api-docs.json 保持一致。接口职责：返回 global-config 模块名称和当前版本。",
+          "code_loc": "main.go:120"
+        }
+      ]
     },
     {
       "method": "GET",
@@ -95,12 +103,14 @@
               {
                 "name": "current_value",
                 "type": "object",
-                "description": "当前配置值，类型随 value_type 变化。"
+                "description": "当前配置值，类型随 value_type 变化。",
+                "fields": []
               },
               {
                 "name": "default_value",
                 "type": "object",
-                "description": "默认配置值，类型随 value_type 变化。"
+                "description": "默认配置值，类型随 value_type 变化。",
+                "fields": []
               },
               {
                 "name": "description",
@@ -167,7 +177,15 @@
           "page_size": 20
         },
         "msg": ""
-      }
+      },
+      "rules": [
+        {
+          "category": "security",
+          "title": "查询配置列表 鉴权边界",
+          "body": "该接口按 auth=admin_session 执行访问控制；未满足身份、内部令牌、后台会话或 API key 要求时必须拒绝主流程。接口职责：校验查看权限后分页查询全局配置，可按模块名和关键词过滤。",
+          "code_loc": "main.go:121"
+        }
+      ]
     },
     {
       "method": "GET",
@@ -202,12 +220,14 @@
           {
             "name": "current_value",
             "type": "object",
-            "description": "当前配置值。"
+            "description": "当前配置值。",
+            "fields": []
           },
           {
             "name": "default_value",
             "type": "object",
-            "description": "默认配置值。"
+            "description": "默认配置值。",
+            "fields": []
           },
           {
             "name": "description",
@@ -266,7 +286,15 @@
           "updated_at": "2026-05-28T00:00:00Z"
         },
         "msg": ""
-      }
+      },
+      "rules": [
+        {
+          "category": "security",
+          "title": "查询配置详情 鉴权边界",
+          "body": "该接口按 auth=admin_session 执行访问控制；未满足身份、内部令牌、后台会话或 API key 要求时必须拒绝主流程。接口职责：校验查看权限后查询单个全局配置详情。",
+          "code_loc": "main.go:122"
+        }
+      ]
     },
     {
       "method": "POST",
@@ -293,7 +321,8 @@
           "name": "current_value",
           "type": "object",
           "required": true,
-          "description": "新的配置值，类型必须匹配该配置的 value_type。"
+          "description": "新的配置值，类型必须匹配该配置的 value_type。",
+          "fields": []
         }
       ],
       "request_example": {
@@ -318,7 +347,8 @@
           {
             "name": "current_value",
             "type": "object",
-            "description": "更新后的当前值。"
+            "description": "更新后的当前值。",
+            "fields": []
           },
           {
             "name": "updated_at",
@@ -362,7 +392,15 @@
           "updated_at": "2026-05-28T00:00:00Z"
         },
         "msg": ""
-      }
+      },
+      "rules": [
+        {
+          "category": "security",
+          "title": "更新配置值 鉴权边界",
+          "body": "该接口按 auth=admin_session 执行访问控制；未满足身份、内部令牌、后台会话或 API key 要求时必须拒绝主流程。接口职责：校验编辑权限后更新指定全局配置的当前值。",
+          "code_loc": "main.go:123"
+        }
+      ]
     },
     {
       "method": "POST",
@@ -407,12 +445,14 @@
           {
             "name": "current_value",
             "type": "object",
-            "description": "恢复后的当前值。"
+            "description": "恢复后的当前值。",
+            "fields": []
           },
           {
             "name": "default_value",
             "type": "object",
-            "description": "默认值。"
+            "description": "默认值。",
+            "fields": []
           },
           {
             "name": "updated_at",
@@ -453,7 +493,15 @@
           "updated_at": "2026-05-28T00:00:00Z"
         },
         "msg": ""
-      }
+      },
+      "rules": [
+        {
+          "category": "security",
+          "title": "恢复默认配置 鉴权边界",
+          "body": "该接口按 auth=admin_session 执行访问控制；未满足身份、内部令牌、后台会话或 API key 要求时必须拒绝主流程。接口职责：校验恢复权限后把指定全局配置恢复为默认值。",
+          "code_loc": "main.go:124"
+        }
+      ]
     },
     {
       "method": "POST",
@@ -473,7 +521,15 @@
         "status": 0,
         "data": null,
         "msg": "pong"
-      }
+      },
+      "rules": [
+        {
+          "category": "security",
+          "title": "后台连通性检查 鉴权边界",
+          "body": "该接口按 auth=api_key 执行访问控制；未满足身份、内部令牌、后台会话或 API key 要求时必须拒绝主流程。接口职责：管理端连通性检查接口，返回 pong。",
+          "code_loc": "main.go:126"
+        }
+      ]
     }
   ]
 }

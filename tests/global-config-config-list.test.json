@@ -1,0 +1,27 @@
+{
+  "api": "GET /api/global_config/config/list",
+  "cases": [
+    {
+      "name": "查询配置列表 成功",
+      "kind": "http",
+      "actor": "admin",
+      "method": "GET",
+      "path": "/api/global_config/config/list?page=1&page_size=20",
+      "expect_status": 200,
+      "expect_field": {
+        "status": 0
+      }
+    },
+    {
+      "name": "查询配置列表 参数非法",
+      "kind": "http",
+      "actor": "admin",
+      "method": "GET",
+      "path": "/api/global_config/config/list",
+      "expect_status": 200,
+      "expect_field": {
+        "status": 2301
+      }
+    }
+  ]
+}
