@@ -249,9 +249,9 @@ func (p *MyPlugin) Init(ctx PluginContext) error {
 - `api_key`：通过密钥调用
 - `public`：公开接口，无需认证
 
-### api-docs.json 嵌套字段写法
+### api-docs/ 嵌套字段写法
 
-doc-writeback 阶段产出的 `api-docs.json` 描述每个接口的请求/响应结构，会被 admin-server 推送到 Apifox。响应里出现嵌套对象或数组对象时，按以下约定写，平台才能完整展开导出：
+doc-writeback 阶段产出的 `api-docs/` 描述每个接口的请求/响应结构，会被 admin-server 推送到 Apifox。响应里出现嵌套对象或数组对象时，按以下约定写，平台才能完整展开导出：
 
 - 嵌套对象：用 `type:"object" + fields:[...]`，子字段继续按同样规则写
 - 数组（items 是对象）：用 `type:"array" + fields:[...]`
@@ -274,7 +274,7 @@ doc-writeback 阶段产出的 `api-docs.json` 描述每个接口的请求/响应
 }
 ```
 
-完整示例见 [examples/api-docs.example.json](examples/api-docs.example.json) 的 `/api/me` 接口。
+完整示例见 `api-docs/manifest.json` 和 `api-docs/endpoints/*.json`。
 
 ## 数据库规范
 
