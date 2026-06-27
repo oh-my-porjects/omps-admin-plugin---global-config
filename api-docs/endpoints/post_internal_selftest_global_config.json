@@ -1,0 +1,48 @@
+{
+  "method": "POST",
+  "path": "/_internal/selftest/global-config",
+  "endpoint_key": "POST /_internal/selftest/global-config",
+  "title": "内部自测入口",
+  "description": "历史内部自测入口；当前流水线以 tests/*.test.json 为准，该入口保留兼容并返回废弃说明。",
+  "auth": "internal",
+  "params": [],
+  "response": {
+    "data_type": "object",
+    "fields": [
+      {
+        "name": "status",
+        "type": "number",
+        "description": "业务状态码；0 表示成功，非 0 表示失败。",
+        "enum_values": [
+          {
+            "value": 0,
+            "label": "成功"
+          },
+          {
+            "value": 1,
+            "label": "失败或未注册"
+          }
+        ]
+      },
+      {
+        "name": "msg",
+        "type": "string",
+        "description": "业务处理结果说明或错误原因。"
+      },
+      {
+        "name": "data",
+        "type": "object",
+        "description": "接口返回数据；无结果时为空对象。",
+        "fields": []
+      }
+    ]
+  },
+  "rules": [
+    {
+      "category": "business",
+      "title": "稳定契约",
+      "body": "历史内部自测入口；当前流水线以 tests/*.test.json 为准，该入口保留兼容并返回废弃说明。",
+      "code_loc": "main.go:Routes"
+    }
+  ]
+}

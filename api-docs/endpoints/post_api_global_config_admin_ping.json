@@ -1,0 +1,28 @@
+{
+  "method": "POST",
+  "path": "/api/global_config/admin/ping",
+  "endpoint_key": "POST /api/global_config/admin/ping",
+  "title": "后台连通性检查",
+  "description": "管理端连通性检查接口，返回 pong。",
+  "auth": "api_key",
+  "params": [],
+  "response": {
+    "description": "固定返回 pong。",
+    "data_type": "object",
+    "fields": [],
+    "error_codes": []
+  },
+  "response_example": {
+    "status": 0,
+    "data": null,
+    "msg": "pong"
+  },
+  "rules": [
+    {
+      "category": "security",
+      "title": "后台连通性检查 鉴权边界",
+      "body": "该接口按 auth=api_key 执行访问控制；未满足身份、内部令牌、后台会话或 API key 要求时必须拒绝主流程。接口职责：管理端连通性检查接口，返回 pong。",
+      "code_loc": "main.go:126"
+    }
+  ]
+}

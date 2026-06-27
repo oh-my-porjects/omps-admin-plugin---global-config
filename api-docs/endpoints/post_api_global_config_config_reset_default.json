@@ -1,0 +1,101 @@
+{
+  "method": "POST",
+  "path": "/api/global_config/config/reset-default",
+  "endpoint_key": "POST /api/global_config/config/reset-default",
+  "title": "恢复默认配置",
+  "description": "校验恢复权限后把指定全局配置恢复为默认值。",
+  "auth": "admin_session",
+  "params": [
+    {
+      "name": "operator_session_token",
+      "type": "string",
+      "required": true,
+      "description": "后台操作人的会话令牌。"
+    },
+    {
+      "name": "config_key",
+      "type": "string",
+      "required": true,
+      "constraint": "配置键名格式",
+      "description": "要恢复默认值的配置键名。"
+    }
+  ],
+  "request_example": {
+    "operator_session_token": "session-token",
+    "config_key": "wallet.min_recharge"
+  },
+  "response": {
+    "description": "返回恢复后的配置值。",
+    "data_type": "object",
+    "fields": [
+      {
+        "name": "config_key",
+        "type": "string",
+        "description": "配置键名。"
+      },
+      {
+        "name": "value_type",
+        "type": "string",
+        "description": "值类型。"
+      },
+      {
+        "name": "current_value",
+        "type": "object",
+        "description": "恢复后的当前值。",
+        "fields": []
+      },
+      {
+        "name": "default_value",
+        "type": "object",
+        "description": "默认值。",
+        "fields": []
+      },
+      {
+        "name": "updated_at",
+        "type": "string",
+        "description": "更新时间，RFC3339 字符串。"
+      }
+    ],
+    "error_codes": [
+      {
+        "status": 2331,
+        "msg": "缺少后台会话。"
+      },
+      {
+        "status": 2332,
+        "msg": "后台会话无效。"
+      },
+      {
+        "status": 2333,
+        "msg": "配置键名缺失或格式不合法。"
+      },
+      {
+        "status": 2334,
+        "msg": "配置项不存在。"
+      },
+      {
+        "status": 2335,
+        "msg": "无恢复权限或恢复失败。"
+      }
+    ]
+  },
+  "response_example": {
+    "status": 0,
+    "data": {
+      "config_key": "wallet.min_recharge",
+      "value_type": "number",
+      "current_value": 100,
+      "default_value": 100,
+      "updated_at": "2026-05-28T00:00:00Z"
+    },
+    "msg": ""
+  },
+  "rules": [
+    {
+      "category": "security",
+      "title": "恢复默认配置 鉴权边界",
+      "body": "该接口按 auth=admin_session 执行访问控制；未满足身份、内部令牌、后台会话或 API key 要求时必须拒绝主流程。接口职责：校验恢复权限后把指定全局配置恢复为默认值。",
+      "code_loc": "main.go:124"
+    }
+  ]
+}

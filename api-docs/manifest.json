@@ -1,0 +1,48 @@
+{
+  "module": "global-config",
+  "module_title": "全局配置",
+  "version": 1,
+  "endpoints": [
+    {
+      "key": "GET /api/global_config/hello",
+      "file": "endpoints/get_api_global_config_hello.json"
+    },
+    {
+      "key": "GET /api/global_config/config/list",
+      "file": "endpoints/get_api_global_config_config_list.json"
+    },
+    {
+      "key": "GET /api/global_config/config/detail",
+      "file": "endpoints/get_api_global_config_config_detail.json"
+    },
+    {
+      "key": "POST /api/global_config/config/update",
+      "file": "endpoints/post_api_global_config_config_update.json"
+    },
+    {
+      "key": "POST /api/global_config/config/reset-default",
+      "file": "endpoints/post_api_global_config_config_reset_default.json"
+    },
+    {
+      "key": "POST /api/global_config/admin/ping",
+      "file": "endpoints/post_api_global_config_admin_ping.json"
+    },
+    {
+      "key": "POST /_internal/method-call/global-config",
+      "file": "endpoints/post_internal_method_call_global_config.json"
+    },
+    {
+      "key": "POST /_internal/scheduled-trigger/global-config",
+      "file": "endpoints/post_internal_scheduled_trigger_global_config.json"
+    },
+    {
+      "key": "POST /_internal/selftest/global-config",
+      "file": "endpoints/post_internal_selftest_global_config.json"
+    }
+  ],
+  "ws_events": [],
+  "components": {
+    "schemas": [],
+    "enums": []
+  }
+}

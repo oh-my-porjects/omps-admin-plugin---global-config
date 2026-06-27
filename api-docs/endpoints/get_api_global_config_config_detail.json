@@ -1,0 +1,109 @@
+{
+  "method": "GET",
+  "path": "/api/global_config/config/detail",
+  "endpoint_key": "GET /api/global_config/config/detail",
+  "title": "查询配置详情",
+  "description": "校验查看权限后查询单个全局配置详情。",
+  "auth": "admin_session",
+  "params": [
+    {
+      "name": "config_key",
+      "type": "string",
+      "required": true,
+      "constraint": "配置键名格式",
+      "description": "要查询的配置键名。"
+    }
+  ],
+  "response": {
+    "description": "返回单个配置项详情。",
+    "data_type": "object",
+    "fields": [
+      {
+        "name": "config_key",
+        "type": "string",
+        "description": "配置键名。"
+      },
+      {
+        "name": "value_type",
+        "type": "string",
+        "description": "值类型：string、number、boolean 或 json。"
+      },
+      {
+        "name": "current_value",
+        "type": "object",
+        "description": "当前配置值。",
+        "fields": []
+      },
+      {
+        "name": "default_value",
+        "type": "object",
+        "description": "默认配置值。",
+        "fields": []
+      },
+      {
+        "name": "description",
+        "type": "string",
+        "description": "配置用途说明。"
+      },
+      {
+        "name": "module_name",
+        "type": "string",
+        "description": "所属模块。"
+      },
+      {
+        "name": "created_at",
+        "type": "string",
+        "description": "创建时间，RFC3339 字符串。"
+      },
+      {
+        "name": "updated_at",
+        "type": "string",
+        "description": "更新时间，RFC3339 字符串。"
+      }
+    ],
+    "error_codes": [
+      {
+        "status": 2311,
+        "msg": "缺少后台会话。"
+      },
+      {
+        "status": 2312,
+        "msg": "后台会话无效。"
+      },
+      {
+        "status": 2313,
+        "msg": "配置键名缺失或格式不合法。"
+      },
+      {
+        "status": 2314,
+        "msg": "配置项不存在。"
+      },
+      {
+        "status": 2315,
+        "msg": "无查看权限或查询失败。"
+      }
+    ]
+  },
+  "response_example": {
+    "status": 0,
+    "data": {
+      "config_key": "wallet.min_recharge",
+      "value_type": "number",
+      "current_value": 100,
+      "default_value": 100,
+      "description": "最低充值金额",
+      "module_name": "wallet",
+      "created_at": "2026-05-28T00:00:00Z",
+      "updated_at": "2026-05-28T00:00:00Z"
+    },
+    "msg": ""
+  },
+  "rules": [
+    {
+      "category": "security",
+      "title": "查询配置详情 鉴权边界",
+      "body": "该接口按 auth=admin_session 执行访问控制；未满足身份、内部令牌、后台会话或 API key 要求时必须拒绝主流程。接口职责：校验查看权限后查询单个全局配置详情。",
+      "code_loc": "main.go:122"
+    }
+  ]
+}
