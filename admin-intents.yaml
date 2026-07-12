@@ -1,0 +1,152 @@
+$schema: admin-ui-intent/v1
+module: global-config
+
+pages:
+  - key: global_config.list
+    title: { fallback: 全局配置 }
+    description: { fallback: 查看和维护已部署模块暴露的全局配置项。 }
+    route: /system/configs
+    menu_key: system.configs
+    menu_title: { fallback: 全局配置 }
+    menu_path:
+      - { key: system, title: { fallback: 系统管理 }, icon: settings, order: 900 }
+      - { key: system.operations, title: { fallback: 配置与运维 }, icon: settings, order: 20 }
+    icon: settings
+    order: 140
+    template: { id: standard-list, version: 1.0.0 }
+    size: md
+    query_capability: global_config.endpoint.get_api_global_config_config_list
+    pagination: true
+    filters:
+      - key: keyword
+        binding: keyword
+        label: { fallback: 配置关键词 }
+        control: search
+      - key: module_name
+        binding: module_name
+        label: { fallback: 所属模块 }
+        control: search
+    columns:
+      - field: config_key
+        title: { fallback: 配置键 }
+        min_width: 240
+      - field: current_value
+        title: { fallback: 当前值 }
+        renderer: text
+        min_width: 180
+      - field: value_type
+        title: { fallback: 值类型 }
+        min_width: 110
+      - field: module_name
+        title: { fallback: 所属模块 }
+        min_width: 150
+      - field: description
+        title: { fallback: 说明 }
+        min_width: 240
+      - field: updated_at
+        title: { fallback: 更新时间 }
+        min_width: 180
+    actions:
+      - key: global_config.list.action.detail
+        type: navigate
+        source: row
+        title: { fallback: 查看 }
+        target_page_key: global_config.detail
+        bindings:
+          config_key: { source: row, key: config_key, required: true }
+      - key: global_config.list.action.edit
+        type: navigate
+        source: row
+        title: { fallback: 修改 }
+        target_page_key: global_config.edit
+        bindings:
+          config_key: { source: row, key: config_key, required: true }
+      - key: global_config.list.action.reset
+        type: submit
+        source: row
+        title: { fallback: 恢复默认值 }
+        capability_key: global_config.endpoint.post_api_global_config_config_reset_default
+        danger: confirm
+        confirm:
+          title: { fallback: 确认恢复默认配置？ }
+          description: { fallback: 当前配置值会立即被默认值覆盖并影响当前项目后台。 }
+        bindings:
+          config_key: { source: row, key: config_key, required: true }
+
+  - key: global_config.detail
+    title: { fallback: 配置详情 }
+    route: /system/configs/detail
+    menu_hidden: true
+    menu_key: system.config_detail
+    menu_title: { fallback: 配置详情 }
+    order: 141
+    template: { id: standard-detail, version: 1.0.0 }
+    size: md
+    detail_capability: global_config.endpoint.get_api_global_config_config_detail
+    fields:
+      - binding: config_key
+        label: { fallback: 配置键 }
+      - binding: current_value
+        label: { fallback: 当前值 }
+        control: json
+      - binding: default_value
+        label: { fallback: 默认值 }
+        control: json
+      - binding: value_type
+        label: { fallback: 值类型 }
+      - binding: module_name
+        label: { fallback: 所属模块 }
+      - binding: description
+        label: { fallback: 说明 }
+      - binding: updated_at
+        label: { fallback: 更新时间 }
+    actions:
+      - key: global_config.detail.action.edit
+        type: navigate
+        source: page
+        title: { fallback: 修改配置 }
+        target_page_key: global_config.edit
+        bindings:
+          config_key: { source: route, key: config_key, required: true }
+
+  - key: global_config.edit
+    title: { fallback: 修改全局配置 }
+    route: /system/configs/edit
+    menu_hidden: true
+    menu_key: system.config_edit
+    menu_title: { fallback: 修改全局配置 }
+    order: 142
+    template: { id: standard-form, version: 1.0.0 }
+    size: md
+    detail_capability: global_config.endpoint.get_api_global_config_config_detail
+    fields:
+      - binding: config_key
+        label: { fallback: 配置键 }
+        control: input
+        read_only: true
+      - binding: value_type
+        label: { fallback: 值类型 }
+        control: input
+        read_only: true
+      - binding: current_value
+        label: { fallback: 当前值 }
+        control: json
+        required: true
+        placeholder: { fallback: 请输入与值类型匹配的 JSON 值 }
+      - binding: description
+        label: { fallback: 说明 }
+        control: textarea
+        read_only: true
+    actions:
+      - key: global_config.edit.action.submit
+        type: submit
+        source: form
+        title: { fallback: 保存配置 }
+        capability_key: global_config.endpoint.post_api_global_config_config_update
+        danger: confirm
+        confirm:
+          title: { fallback: 确认保存全局配置？ }
+          description: { fallback: 保存后新配置会立即在当前环境生效。 }
+        bindings:
+          config_key: { source: route, key: config_key, required: true }
+          current_value: { source: form, key: current_value, required: true }
