@@ -64,12 +64,13 @@ import (
 //   - Push / Emit / Broadcast / IsOnline: 模块给客户端主动发消息时调
 //   - RegisterAuth: 仅登录模块在 Init 里调一次，把鉴权回调交给 runtime
 type PluginContext struct {
-	DB             *sql.DB
-	Config         map[string]string
-	Logger         *slog.Logger
-	LifecycleCtx   context.Context
-	RegisterWorker func() func() // goroutine 起来时调用，返回 dereg 函数供 defer
-	IsUnloading    func() bool   // 查询模块是否处于 unloading（外部/定时任务可据此拒绝接新工作）
+	DB              *sql.DB
+	Config          map[string]string
+	Logger          *slog.Logger
+	LifecycleCtx    context.Context
+	RegisterWorker  func() func() // goroutine 起来时调用，返回 dereg 函数供 defer
+	IsUnloading     func() bool   // 查询模块是否处于 unloading（外部/定时任务可据此拒绝接新工作）
+	InternalRequest func(context.Context, string, string, []byte, http.Header) (int, http.Header, []byte, error)
 
 	// Push 给单个用户发"必送达"通知；模块业务里需要"通知用户"时调它
 	// 入 ws_outbox 表后立即返回，后台 worker 投递，离线用户上线补发
@@ -118,7 +119,7 @@ var Plugin = &GlobalConfigPlugin{}
 // ServeHTTP 或内部 mux，多个插件之间会互相拦截请求导致 404。
 var Routes = map[string]http.HandlerFunc{
 	// 前台接口示例（以 /api/ 开头）
-	"GET /api/global_config/hello":                                handleHello,
+	"GET /api/global_config/hello":                 handleHello,
 	"GET /api/global_config/config/list":           handleConfigList,
 	"GET /api/global_config/config/detail":         handleConfigDetail,
 	"POST /api/global_config/config/update":        handleConfigUpdate,
@@ -178,10 +179,10 @@ type GlobalConfigPlugin struct {
 	broadcast func(ctx context.Context, userIDs []string, code string, data any) ([]int64, error)
 	isOnline  func(userID string) bool
 
-	mu          sync.Mutex
-	items       map[string]globalConfigItem
-	adminAPIKey string
-	runtimeAddr string
+	mu              sync.Mutex
+	items           map[string]globalConfigItem
+	adminAPIKey     string
+	internalRequest func(context.Context, string, string, []byte, http.Header) (int, http.Header, []byte, error)
 }
 
 // version 由 admin-server 在编译 .so 时通过 -ldflags "-X <module_path>.version=<deploy_tag>" 注入。
@@ -203,7 +204,7 @@ func (p *GlobalConfigPlugin) Init(ctx PluginContext) error {
 	p.broadcast = ctx.Broadcast
 	p.isOnline = ctx.IsOnline
 	p.adminAPIKey = ctx.Config["ADMIN_API_KEY"]
-	p.runtimeAddr = ctx.Config["RUNTIME_ADDR"]
+	p.internalRequest = ctx.InternalRequest
 	// 仅登录模块需要：把鉴权回调注册给 runtime；普通业务模块这一行可删
 	p.registerAuthIfLoginModule(ctx)
 	if err := p.ensureSchema(context.Background()); err != nil {

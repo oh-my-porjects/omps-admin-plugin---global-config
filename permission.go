@@ -1,13 +1,10 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
-	"net"
 	"net/http"
-	"net/url"
 	"strings"
 	"time"
 )
@@ -107,7 +104,7 @@ func hasAPIKey(r *http.Request) bool {
 func (p *GlobalConfigPlugin) checkOperatorPermission(ctx context.Context, r *http.Request, token, permission string) (bool, error) {
 	body := map[string]string{"session_token": token, "permission_code": permission}
 	var resp adminAccountPermissionResponse
-	if err := p.doAdminAccountRequest(ctx, r, http.MethodPost, "/api/admin-account/check-permission", body, &resp); err != nil {
+	if err := p.doAdminAccountRequest(ctx, r, http.MethodPost, "/api/account/check-permission", body, &resp); err != nil {
 		return false, err
 	}
 	switch resp.Status {
@@ -128,7 +125,7 @@ func (p *GlobalConfigPlugin) checkOperatorPermission(ctx context.Context, r *htt
 
 func (p *GlobalConfigPlugin) doAdminAccountRequest(ctx context.Context, r *http.Request, method, path string, body any, out any) error {
 	if ctx != nil {
-		if mock, ok := ctx.Value(selftestAdminPermissionContextKey{}).(string); ok && method == http.MethodPost && path == "/api/admin-account/check-permission" {
+		if mock, ok := ctx.Value(selftestAdminPermissionContextKey{}).(string); ok && method == http.MethodPost && path == "/api/account/check-permission" {
 			data, err := json.Marshal(adminAccountPermissionData{Allowed: mock == "allowed"})
 			if err != nil {
 				return err
@@ -142,48 +139,29 @@ func (p *GlobalConfigPlugin) doAdminAccountRequest(ctx context.Context, r *http.
 	} else {
 		ctx = context.Background()
 	}
+	if p == nil || p.internalRequest == nil {
+		return errors.New("runtime internal request bridge unavailable")
+	}
 	raw, err := json.Marshal(body)
 	if err != nil {
 		return err
 	}
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
-	req, err := http.NewRequestWithContext(ctx, method, p.runtimeURL(r, path), bytes.NewReader(raw))
-	if err != nil {
-		return err
+	headers := make(http.Header)
+	if r != nil {
+		headers = r.Header.Clone()
 	}
-	req.Header.Set("Content-Type", "application/json")
+	headers.Set("Content-Type", "application/json")
 	if strings.TrimSpace(p.adminAPIKey) != "" {
-		req.Header.Set("X-API-Key", p.adminAPIKey)
+		headers.Set("X-API-Key", p.adminAPIKey)
 	}
-	res, err := http.DefaultClient.Do(req)
+	status, _, responseBody, err := p.internalRequest(ctx, method, path, raw, headers)
 	if err != nil {
 		return err
 	}
-	defer res.Body.Close()
-	if res.StatusCode < 200 || res.StatusCode >= 300 {
+	if status < http.StatusOK || status >= http.StatusMultipleChoices {
 		return errors.New("admin_account api http status failed")
 	}
-	return json.NewDecoder(res.Body).Decode(out)
-}
-
-func (p *GlobalConfigPlugin) runtimeURL(r *http.Request, path string) string {
-	host := strings.TrimSpace(p.runtimeAddr)
-	if host == "" && r != nil {
-		host = strings.TrimSpace(r.Host)
-	}
-	if host == "" || host == "example.com" {
-		host = "127.0.0.1:8080"
-	}
-	if !strings.Contains(host, "://") {
-		host = "http://" + host
-	}
-	parsed, err := url.Parse(host)
-	if err == nil && parsed.Port() == "" {
-		if _, _, splitErr := net.SplitHostPort(parsed.Host); splitErr != nil {
-			parsed.Host = net.JoinHostPort(parsed.Hostname(), "8080")
-			host = parsed.String()
-		}
-	}
-	return strings.TrimRight(host, "/") + path
+	return json.Unmarshal(responseBody, out)
 }

@@ -69,3 +69,46 @@ func TestRequirePermissionRejectsOperatorForConfigMutation(t *testing.T) {
 		t.Fatalf("unexpected http status %d", rec.Code)
 	}
 }
+
+func TestCheckOperatorPermissionUsesInternalBridge(t *testing.T) {
+	called := false
+	p := &GlobalConfigPlugin{
+		internalRequest: func(ctx context.Context, method, target string, body []byte, headers http.Header) (int, http.Header, []byte, error) {
+			called = true
+			if method != http.MethodPost {
+				t.Fatalf("method = %s, want POST", method)
+			}
+			if target != "/api/account/check-permission" {
+				t.Fatalf("target = %s, want account permission endpoint", target)
+			}
+			if got := headers.Get("X-Account-ID"); got != "account_123" {
+				t.Fatalf("X-Account-ID = %q, want account_123", got)
+			}
+			var payload map[string]string
+			if err := json.Unmarshal(body, &payload); err != nil {
+				t.Fatalf("decode request body: %v", err)
+			}
+			if payload["permission_code"] != "global_config.edit" {
+				t.Fatalf("permission_code = %q", payload["permission_code"])
+			}
+			response, err := json.Marshal(adminAccountPermissionResponse{
+				Status: 0,
+				Data:   json.RawMessage(`{"allowed":true}`),
+			})
+			if err != nil {
+				t.Fatalf("encode response: %v", err)
+			}
+			return http.StatusOK, make(http.Header), response, nil
+		},
+	}
+	req := httptest.NewRequest(http.MethodPost, "/api/global_config/config/update", nil)
+	req.Header.Set("X-Account-ID", "account_123")
+
+	allowed, err := p.checkOperatorPermission(context.Background(), req, "session-token", "global_config.edit")
+	if err != nil {
+		t.Fatalf("checkOperatorPermission error = %v", err)
+	}
+	if !called || !allowed {
+		t.Fatalf("called=%v allowed=%v, want true", called, allowed)
+	}
+}
